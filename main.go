@@ -1,11 +1,8 @@
 package main
 
 import (
-	"fmt"
-	"os"
-
 	tea "github.com/charmbracelet/bubbletea"
-	// log "github.com/sirupsen/logrus"
+	log "github.com/sirupsen/logrus"
 )
 
 type phase int
@@ -14,13 +11,6 @@ const (
 	preGame phase = iota
 	inGame
 	postGame
-)
-
-type gameType int
-
-const (
-	singlePlayer gameType = iota
-	multiPlayer
 )
 
 type player struct {
@@ -51,16 +41,17 @@ func toggle(a byte) byte {
 	return 'X'
 }
 
-func initialGameState() *gameState {
+func initialGameState(gameType gameType) *gameState {
 	m := make([][]byte, 8)
 	for i := range m {
 		m[i] = make([]byte, 8)
 	}
 	return &gameState{
-		phase:    preGame,
+		phase:    inGame,
 		matrix:   m,
 		nextByte: 'X',
 		cursor:   0,
+		gameType: gameType,
 	}
 }
 
@@ -79,9 +70,6 @@ func getCursor(col, cur int) string {
 func (gs *gameState) View() string {
 	// The header
 	s := "Play Connect 4!\n\n"
-	if gs.phase == preGame {
-		return s + " 1. Single Player\n 2. Two Player\n"
-	}
 	if gs.gameType == singlePlayer {
 		return s + "Single player in construction\n"
 	}
@@ -112,22 +100,6 @@ func (gs *gameState) View() string {
 }
 
 func (gs *gameState) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
-	if gs.phase == preGame {
-		switch msg := msg.(type) {
-		case tea.KeyMsg:
-
-			switch msg.String() {
-
-			case "1":
-				gs.gameType = singlePlayer
-				gs.phase = inGame
-			case "2":
-				gs.gameType = multiPlayer
-				gs.phase = inGame
-			}
-		}
-		return gs, nil
-	}
 	switch msg := msg.(type) {
 	// Is it a key press?
 	case tea.KeyMsg:
@@ -215,9 +187,32 @@ func (gs *gameState) Init() tea.Cmd {
 }
 
 func main() {
-	p := tea.NewProgram(initialGameState())
-	if err := p.Start(); err != nil {
-		fmt.Printf("Alas, there's been an error: %v", err)
-		os.Exit(1)
+	p := tea.NewProgram(initGameType())
+	initmodelobj, err := p.StartReturningModel()
+	if err != nil {
+		log.Fatalf("unable to take game type input: %v", err)
 	}
+
+	log.Infof("returned model: %v", initmodelobj)
+
+	m, ok := initmodelobj.(*gameTypeModel)
+	p = tea.NewProgram(initUserInput(m.gameType))
+
+	model, err := p.StartReturningModel()
+	if err != nil {
+		log.Fatalf("unable to take user input names: %v", err)
+	}
+	log.Infof("returned model: %v", model)
+
+	if !ok {
+		log.Fatalf("unable to read game Type")
+	}
+	p = tea.NewProgram(initialGameState(m.gameType))
+	model, err = p.StartReturningModel()
+	if err != nil {
+		log.Fatalf("game ended abruptly: %v", err)
+	}
+
+	log.Infof("returned model: %v", model)
+
 }
