@@ -21,14 +21,14 @@ var (
 	blurredButton = fmt.Sprintf("[ %s ]", blurredStyle.Render("Submit"))
 )
 
-type model struct {
+type userInputModel struct {
 	focusIndex int
 	inputs     []textinput.Model
 	cursorMode textinput.CursorMode
 }
 
-func initUserInput(gameType gameType) model {
-	m := model{
+func initUserInput(gameType gameType) *userInputModel {
+	m := &userInputModel{
 		inputs: make([]textinput.Model, 4),
 	}
 
@@ -62,11 +62,11 @@ func initUserInput(gameType gameType) model {
 
 	return m
 }
-func (m model) Init() tea.Cmd {
+func (m *userInputModel) Init() tea.Cmd {
 	return textinput.Blink
 }
 
-func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+func (m *userInputModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
 		switch msg.String() {
@@ -133,7 +133,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	return m, cmd
 }
 
-func (m *model) updateInputs(msg tea.Msg) tea.Cmd {
+func (m *userInputModel) updateInputs(msg tea.Msg) tea.Cmd {
 	var cmds = make([]tea.Cmd, len(m.inputs))
 
 	// Only text inputs with Focus() set will respond, so it's safe to simply
@@ -145,7 +145,7 @@ func (m *model) updateInputs(msg tea.Msg) tea.Cmd {
 	return tea.Batch(cmds...)
 }
 
-func (m model) View() string {
+func (m *userInputModel) View() string {
 	var b strings.Builder
 
 	for i := range m.inputs {
