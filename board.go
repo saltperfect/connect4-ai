@@ -66,6 +66,9 @@ func (b board) is4Connected(r, c int) bool {
 
 func (b board) dropCoin(c int, coin byte) {
 	r := b.getOpenRow(c)
+	if r == -1 {
+		return
+	}
 	b[r][c] = coin
 }
 

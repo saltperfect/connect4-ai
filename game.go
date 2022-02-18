@@ -41,6 +41,10 @@ type gameState struct {
 	players       [2]*player
 }
 
+func (gs *gameState) getCurrentPlayer() *player {
+	return gs.players[gs.currentPlayer]
+}
+
 func toggle(a int) int {
 	if a == 0 {
 		return 1
@@ -195,7 +199,8 @@ func (gs *gameState) View() string {
 	if gs.phase == errorPhase {
 		return s + "error occured restart game\n"
 	}
-	s += "Its is " + string(gs.players[gs.currentPlayer].name) + " turn\n"
+	curPlayer := gs.players[gs.currentPlayer]
+	s += "Its is " + string(curPlayer.name) + " turn\n Coin:" + string(curPlayer.coin) + "\n"
 	// Iterate over our choices
 	s += getCursor(len(gs.matrix[0]), gs.cursor)
 	for _, row := range gs.matrix {
@@ -212,7 +217,7 @@ func (gs *gameState) View() string {
 	}
 
 	if gs.phase == postGame {
-		return s + "Player " + string(gs.players[gs.currentPlayer].name) + " Won!"
+		return s + "Player " + string(curPlayer.name) + " Won!"
 	}
 	// The footer
 	s += "\nPress q to quit.\n"
@@ -251,20 +256,15 @@ func (gs *gameState) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		// to drop your coin in the given column
 		case "enter", " ":
 			if gs.phase == inGame {
-				var r int
-				for r = len(gs.matrix) - 1; r >= 0; r-- {
-					if gs.matrix[r][gs.cursor] == 0 {
-						gs.matrix[r][gs.cursor] = gs.players[gs.currentPlayer].coin
-						break
-					}
-				}
-				if gs.matrix.is4Connected(r, gs.cursor) {
+
+				gs.matrix.dropCoin(gs.cursor, gs.getCurrentPlayer().coin)
+				if gs.matrix.winingMove(gs.getCurrentPlayer().coin) {
 					gs.phase = postGame
 				} else {
-					opponent := int(gs.players[gs.currentPlayer].coin)
+					opponent := int(gs.getCurrentPlayer().coin)
 					gs.currentPlayer = toggle(gs.currentPlayer)
 					if gs.players[gs.currentPlayer].isBot {
-						return gs, gs.players[gs.currentPlayer].cmd(gs.matrix, byte(opponent))
+						return gs, gs.getCurrentPlayer().cmd(gs.matrix, byte(opponent))
 					}
 				}
 			}
