@@ -1,5 +1,7 @@
 package main
 
+import "fmt"
+
 var window_length int = 4
 
 type board [][]byte
@@ -64,12 +66,13 @@ func (b board) is4Connected(r, c int) bool {
 	return false
 }
 
-func (b board) dropCoin(c int, coin byte) {
+func (b board) dropCoin(c int, coin byte) error {
 	r := b.getOpenRow(c)
 	if r == -1 {
-		return
+		return fmt.Errorf("column full")
 	}
 	b[r][c] = coin
+	return nil
 }
 
 func (b board) copy() board {
@@ -114,7 +117,7 @@ func (b board) scorePosition(coin byte) int {
 	}
 
 	for r := 0; r < len(b)-3; r++ {
-		for c :=0; c < len(b[0])-3;c++ {
+		for c := 0; c < len(b[0])-3; c++ {
 			w := make([]byte, 4)
 			for i := 0; i < 4; i++ {
 				w[i] = b[r+i][c+i]

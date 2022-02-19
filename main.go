@@ -12,8 +12,6 @@ func main() {
 		log.Fatalf("unable to take game type input: %v", err)
 	}
 
-	log.Infof("returned model: %v", out)
-
 	m := out.(*gameTypeModel)
 
 	p = tea.NewProgram(initUserInput(m.gameType))
@@ -22,15 +20,12 @@ func main() {
 	if err != nil {
 		log.Fatalf("unable to take user input names: %v", err)
 	}
-	log.Infof("returned model: %v", out)
 	textInputModel := out.(*userInputModel)
 
 	p = tea.NewProgram(initialGameState(textInputModel.inputs))
-	out, err = p.StartReturningModel()
+	_, err = p.StartReturningModel()
 	if err != nil {
 		log.Fatalf("game ended abruptly: %v", err)
 	}
-
-	// log.Infof("returned model: %v", out)
 
 }

@@ -65,9 +65,6 @@ func initialGameState(inputs []textinput.Model) *gameState {
 			phase: errorPhase,
 		}
 	}
-	for _, p := range players {
-		fmt.Printf("player: %+v\n", p)
-	}
 	return &gameState{
 		phase:         inGame,
 		matrix:        m,
@@ -135,7 +132,6 @@ func minimax(matrix board, depth, alpha, beta int, maximizingplayer bool) [2]int
 			}
 		} else {
 			score := matrix.scorePosition(ai_coin)
-			// fmt.Printf("score: %d\n", score)
 			return [2]int{-1, score}
 		}
 	}
@@ -257,8 +253,10 @@ func (gs *gameState) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case "enter", " ":
 			if gs.phase == inGame {
 
-				gs.matrix.dropCoin(gs.cursor, gs.getCurrentPlayer().coin)
-				if gs.matrix.winingMove(gs.getCurrentPlayer().coin) {
+				err := gs.matrix.dropCoin(gs.cursor, gs.getCurrentPlayer().coin)
+				if err != nil {
+
+				} else if gs.matrix.winingMove(gs.getCurrentPlayer().coin) {
 					gs.phase = postGame
 				} else {
 					opponent := int(gs.getCurrentPlayer().coin)

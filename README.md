@@ -1,29 +1,6 @@
- _  _  _  _  _  _  _  _ 
- _  _  _  _  _  _  _  _ 
- _  _  _  _  _  _  _  _ 
- _  _  _  _  _  _  _  _ 
- _  _  _  _  _  X  _  _ 
- _  _  _  _  X  X  _  _ 
- _  _  _  X  O  O  _  _ 
- _  _  X  O  O  X  O  _ 
-Player X Won!
+Connect 4 ai using minimax implementation
 
- _  _  _  _  _  _  _  _ 
- _  _  _  _  _  _  _  _ 
- _  _  _  _  _  _  _  _ 
- _  _  _  _  _  _  _  _ 
- _  _  O  _  _  _  _  _ 
- _  _  X  O  _  _  _  _ 
- _  _  O  X  O  _  _  _ 
- _  _  X  X  X  O  _  _ 
-Player O Won!
+This is a command line game and to play clone the repository and run `make build`
 
- _  _  _  _  _  _  _  _ 
- _  _  _  _  _  _  _  _ 
- _  _  _  _  _  _  _  _ 
- _  _  _  _  _  X  _  _ 
- _  _  _  _  X  O  _  _ 
- _  _  _  X  X  X  _  _ 
- _  _  O  O  O  O  _  _ 
- _  _  X  O  X  O  _  _ 
-Player O Won!
+You will find the binaries in the bin folder from where you can easily run them.
+
